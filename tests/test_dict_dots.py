@@ -1,5 +1,5 @@
 import pytest
-from dictdots.DictDots import DictDots, InvalidQueryString
+from DictDots import DictDots, InvalidQueryString
 
 
 @pytest.mark.parametrize("query,result", [
