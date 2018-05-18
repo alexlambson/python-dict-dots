@@ -1,5 +1,5 @@
 import pytest
-from pythonhash.Hash import Hash, InvalidQueryString
+from dictdots.DictDots import DictDots, InvalidQueryString
 
 
 @pytest.mark.parametrize("query,result", [
@@ -10,7 +10,7 @@ from pythonhash.Hash import Hash, InvalidQueryString
     ('i fail', False),
 ])
 def test_is_valid_query(query, result):
-    assert Hash.is_valid_query(query) == result
+    assert DictDots.is_valid_query(query) == result
 
 
 @pytest.mark.parametrize("query", [
@@ -20,7 +20,7 @@ def test_is_valid_query(query, result):
 ])
 def test_hash_get_throws_invalid_query_exception(query):
     with pytest.raises(InvalidQueryString):
-        Hash.get([], query)
+        DictDots.get([], query)
 
 
 @pytest.mark.parametrize('query,result,default', [
@@ -29,7 +29,7 @@ def test_hash_get_throws_invalid_query_exception(query):
     ('doints.1', True, None),
     ('i.dont.exist', None, 'defaultboy')
 ])
-def test_hash_get_succeeds(query, result, default):
+def test_dots_get_succeeds(query, result, default):
     data = {
         'hello':{
             'salute':1
@@ -38,5 +38,5 @@ def test_hash_get_succeeds(query, result, default):
             1:True
         }
     }
-    assert Hash.get(data, query) == result or Hash.get(data, query, default) == default
+    assert DictDots.get(data, query) == result or Hash.get(data, query, default) == default
 

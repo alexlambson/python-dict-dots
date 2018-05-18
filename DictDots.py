@@ -6,7 +6,7 @@ class InvalidQueryString(Exception):
         super().__init__("Query must be a dot-notation string containing only alphanumeric characters and dots")
 
 
-class Hash:
+class DictDots:
     @staticmethod
     def is_valid_query(query):
         return bool(re.match('^[\w\.]+$', query))
@@ -23,7 +23,7 @@ class Hash:
         Returns:
 
         """
-        if not Hash.is_valid_query(query):
+        if not DictDots.is_valid_query(query):
             raise InvalidQueryString
 
         keys = query.split('.')
