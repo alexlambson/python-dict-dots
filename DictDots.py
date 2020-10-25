@@ -1,36 +1,57 @@
 import re
-
-
-class InvalidQueryString(Exception):
-    def __init__(self):
-        super().__init__("Query must be a dot-notation string containing only alphanumeric characters and dots")
+import constants
+from typing import Any
+from dd_types import DotSearchable, DotQuery
+from dd_exceptions import InvalidQueryString, InvalidDataType, DoesNotExist
 
 
 class DictDots:
     @staticmethod
-    def is_valid_query(query):
-        return bool(re.match('^[\w\.]+$', query))
+    def is_valid_query(query: DotQuery) -> bool:
+        return bool(re.match(r'^[\w.]+$', query))
 
     @staticmethod
-    def get(data, query, default=None):
+    def is_searchable_type(data: Any) -> bool:
+        return any([isinstance(data, x) for x in constants.SEARCHABLE_TYPES])
+
+    @staticmethod
+    def _validate_get(searchable: DotSearchable, query: DotQuery) -> None:
+        """Validate parameters for get.
+
+        :param DotSearchable searchable:
+            The object we're trying to dig into.
+        :param DotQuery query:
+            The query to search searchable for
+        :raises InvalidDataType:
+        :raises InvalidQueryString:
+        """
+        if not DictDots.is_searchable_type(searchable):
+            raise InvalidDataType(searchable)
+
+        if not DictDots.is_valid_query(query):
+            raise InvalidQueryString(query)
+
+    @staticmethod
+    def get(searchable: DotSearchable, query: DotQuery, default: Any = None) -> Any:
         """Get a specific nested value.
         
         Args:
-            data (dict):
-            query (str):
-            default:
-                If not set, get returns an error
+            searchable (DotSearchable):
+            query (DotQuery):
+            default (Any):
+                What to return if nothing matching the query is found.
+                An error will be raised if nothing is found and no default is set.
 
-        Returns:
-        
+        Returns (Any):
+            The result matching `query` if found.
+
         Raises:
             Exception: Raised if no item was found and no default was provided.
         """
-        if not DictDots.is_valid_query(query):
-            raise InvalidQueryString
-
+        DictDots._validate_get(searchable, query)
         keys = query.split('.')
-        current_data = data
+        # current_data is the value we are currently digging into.
+        current_data = searchable
 
         for key in keys:
             if key.isnumeric():
@@ -40,7 +61,7 @@ class DictDots:
             elif default:
                 return default
             else:
-                raise Exception(f"Dictionary has no key matching query: '{query}'")
+                raise DoesNotExist(query)
 
         return current_data
 

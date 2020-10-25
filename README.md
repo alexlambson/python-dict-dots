@@ -10,3 +10,5 @@ if nested_needle in haystack[needle]:
 ```
 
 or some kind of loop that searches nested dicts
+
+[Query Language wishlist](docs/ddql.md)
