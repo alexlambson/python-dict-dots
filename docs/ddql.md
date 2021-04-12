@@ -19,8 +19,8 @@ Get returns a specific object matching an exact query.
         },
     }
     ```
--   `[n]` match specific index in a list.
-    e.g. `[0].hello` would get `"world"` from:
+-   `n` match specific index in a list.
+    e.g. `0.hello` would get `"world"` from:
     ```python
     [
         {"hello": "world"},
