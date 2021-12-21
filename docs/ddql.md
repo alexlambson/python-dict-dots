@@ -1,11 +1,13 @@
 # Potential data language
 
+---
 This is a wishlist of how I want the query language to look.
 The only things on here that work right now are `get s` and `get ns`.
 
 I haven't yet decided if I actually want to support sets due to how
 the indexing works through a hash. It would be cumbersome to try and
 pass a big value into dictdots in the query string. 
+
 ## Get
 
 Get returns a specific object matching an exact query.

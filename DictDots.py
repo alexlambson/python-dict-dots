@@ -1,13 +1,13 @@
 import re
 import constants
 from typing import Any
-from dd_types import DotSearchable, DotQuery, DotCurrentKey, DotCurrentData
+from dd_types import DotSearchable, DotQuery, DotCurrentKey, DotCurrentData, DotFilterResult
 from dd_exceptions import InvalidQueryString, InvalidDataType, DoesNotExist, KeyNotFound
 
 
 class DictDots:
     @staticmethod
-    def is_valid_query(query: DotQuery) -> bool:
+    def is_valid_get_query(query: DotQuery) -> bool:
         """Check if the query string has only valid characters.
 
         Queries, for the time being, only allow alphanumeric and dots ``.``
@@ -18,6 +18,10 @@ class DictDots:
             Whether or not this query is valid.
         """
         return bool(re.match(r'^[\w.]+$', query))
+
+    @classmethod
+    def is_valid_filter_query(query: DotQuery):
+        return bool(re.match(r'^[\w.\[\]{}]+$', query))
 
     @staticmethod
     def is_searchable_type(data: Any) -> bool:
@@ -44,7 +48,7 @@ class DictDots:
         if not DictDots.is_searchable_type(searchable):
             raise InvalidDataType(searchable)
 
-        if not DictDots.is_valid_query(query):
+        if not DictDots.is_valid_get_query(query):
             raise InvalidQueryString(query)
 
     @staticmethod
@@ -103,6 +107,51 @@ class DictDots:
                 raise DoesNotExist(query, searchable, e)
 
         return current_data
+
+    @classmethod
+    def filter(cls, searchable: DotSearchable, query: DotQuery) -> DotFilterResult:
+        """Query a searchable
+
+        Attempt to find values in a searchable matching the key from the search string.
+        Returns a list of all matches.
+        Will return an empty list if no matches are found.
+
+        Does not raise an error for invalid keys because this is a search.
+
+        :param DotSearchable searchable:
+            The data to query.
+        :param DotQuery query:
+            A query string to search the data for.
+        :return DotFilterResult:
+            A list of all data matching the search string in ``query``.
+            May be empty.
+        """
+        DictDots._validate_get(searchable, query)
+        keys = query.split('.')
+        # current_data is the value we are currently digging into.
+        current_data = searchable
+
+        type_methods = {
+            dict: cls._dict_getter,
+            list: cls._list_getter,
+        }
+
+        for key in keys:
+            if key.isnumeric():
+                # We don't support numerical strings for now, so convert them to ints.
+                key = int(key)
+
+            method = type_methods[type(current_data)]
+
+            try:
+                current_data = method(key, current_data)
+            except KeyNotFound as e:
+                if default:
+                    return default
+                raise DoesNotExist(query, searchable, e)
+
+        return current_data
+
 
 
 

@@ -12,7 +12,7 @@ from dd_exceptions import InvalidQueryString, DoesNotExist
 ])
 def test_is_valid_query(query, result):
     """Test that queries can be validated."""
-    assert DictDots.is_valid_query(query) == result
+    assert DictDots.is_valid_get_query(query) == result
 
 
 @pytest.mark.parametrize("data,expected", [
