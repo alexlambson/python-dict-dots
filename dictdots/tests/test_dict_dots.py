@@ -1,6 +1,6 @@
 import pytest
-from DictDots import DictDots
-from dd_exceptions import InvalidQueryString, DoesNotExist
+from dictdots import DictDots
+from dictdots.exceptions import InvalidQueryString, DoesNotExist
 
 
 @pytest.mark.parametrize("query,result", [
@@ -9,6 +9,9 @@ from dd_exceptions import InvalidQueryString, DoesNotExist
     ('i.should.fail\r\n', False),
     ('Ishouldpass', True),
     ('i fail', False),
+    ('i.am.sneaky..snake', False),
+    ('.no.beginnings', False),
+    ('no.endings.', False),
 ])
 def test_is_valid_query(query, result):
     """Test that queries can be validated."""
@@ -34,7 +37,10 @@ def test_is_searchable_type(data, expected):
 @pytest.mark.parametrize("query", [
     "I should fail",
     "same.with me",
-    "please.end.me\r\n"
+    "please.end.me\r\n",
+    "hello..world",
+    ".no.beginnings",
+    "no.endings.",
 ])
 def test_hash_get_throws_invalid_query_exception(query):
     """Tests that an error is raised for invalid queries."""
@@ -49,6 +55,7 @@ def test_hash_get_throws_invalid_query_exception(query):
     ('doints', {1: True}),
     ("list.0", 1),
     ("1", "numeric key"),
+    ("under_score.bean_can.1", "found")
 ])
 def test_dots_get_succeeds__no_default(query, result):
     """Tests that get retrieves the correct value."""
@@ -63,7 +70,13 @@ def test_dots_get_succeeds__no_default(query, result):
             1,
             2,
         ],
-        1: "numeric key"
+        1: "numeric key",
+        "under_score": {
+            "bean_can": [
+                "nope",
+                "found",
+            ]
+        }
     }
     assert DictDots.get(data, query) == result
 
