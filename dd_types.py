@@ -17,3 +17,6 @@ DotCurrentKey = Union[str, int]
 
 """A type representing the accepted data types for getter functions."""
 DotCurrentData = DotSearchable
+
+"""The result of a filter query. Can be empty."""
+DotFilterResult = List[Any]
