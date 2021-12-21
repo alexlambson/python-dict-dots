@@ -1,4 +1,4 @@
-from dd_types import DotQuery, DotSearchable
+from dictdots.types import DotQuery, DotSearchable
 from typing import Optional, Any
 
 

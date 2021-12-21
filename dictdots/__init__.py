@@ -1,8 +1,8 @@
 import re
-import constants
 from typing import Any
-from dd_types import DotSearchable, DotQuery, DotCurrentKey, DotCurrentData
-from dd_exceptions import InvalidQueryString, InvalidDataType, DoesNotExist, KeyNotFound
+from .types import DotSearchable, DotQuery, DotCurrentKey, DotCurrentData
+from .exceptions import InvalidQueryString, InvalidDataType, DoesNotExist, KeyNotFound
+from . import constants
 
 
 class DictDots:
@@ -17,7 +17,11 @@ class DictDots:
         :return bool:
             Whether or not this query is valid.
         """
-        return bool(re.match(r'^[\w.]+$', query))
+        # alphanumeric + dots that does not begin or end with a dot.
+        characters_allowed = bool(re.match(r'^(?!\.)[\w.]+(?<!\.)$', query))
+        empty_keys = bool(re.search(r'\.{2,}', query))
+
+        return characters_allowed and not empty_keys
 
     @staticmethod
     def is_searchable_type(data: Any) -> bool:
