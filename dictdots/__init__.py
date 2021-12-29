@@ -108,5 +108,41 @@ class DictDots:
 
         return current_data
 
+    @classmethod
+    def exists(cls, searchable: DotSearchable, query: DotQuery) -> bool:
+        """Check to see if a key exists.
+
+        Args:
+            searchable (DotSearchable):
+            query (DotQuery):
+
+        Returns (bool):
+            ``True`` if the key exists, regardless of value.
+        """
+        DictDots._validate_get(searchable, query)
+        keys = query.split('.')
+        # current_searchable is the searchable we are currently digging into.
+        current_searchable = searchable
+
+        type_methods = {
+            dict: cls._dict_getter,
+            list: cls._list_getter,
+        }
+
+        for key in keys:
+            if key.isnumeric():
+                # We don't support numerical strings for now, so convert them to ints.
+                key = int(key)
+
+            method = type_methods[type(current_searchable)]
+
+            try:
+                current_searchable = method(key, current_searchable)
+            except KeyNotFound:
+                return False
+
+        # Key exists if we make it through all the fot-notated keys without a KeyNotFound error.
+        return True
+
 
 

@@ -133,3 +133,45 @@ def test_get__raises_does_not_exist(query):
     data = {"hello": "world"}
     with pytest.raises(DoesNotExist):
         DictDots.get(data, query)
+
+
+@pytest.mark.parametrize("key,expected", [
+    ("covenant", False),
+    ("unsc.army.noble.n6", True),
+    ("forerunner.warrior_servants.nice", True),
+    ("covenant.banished.atriox", False),
+    ("unsc", True),
+    ("forerunner.warrior_servants.metarch_03", True),
+])
+def test_exists(key, expected):
+    """Tests that ``exists`` correctly returns ``True`` when a key exists, regardless of value."""
+    t = {
+        "unsc": {
+            "oni": {
+                "director": "Parangosky",
+                "section_3": {
+                    "scientist": "Halsey"
+                }
+            },
+            "army": {
+                "noble": {
+                    "commander": "Holland",
+                    "n1": "MIA",
+                    "n2": "MIA",
+                    "n3": "MIA",
+                    "n4": "MIA",
+                    "n5": "MIA",
+                    "n6": None
+                }
+            }
+        },
+        "forerunner": {
+            "warrior_servants": {
+                "metarch_01": "Mendicant Bias",
+                "metarch_02": "Offensive Bias",
+                "metarch_03": "",
+                "nice": False,
+            }
+        },
+    }
+    assert DictDots.exists(t, key) == expected
