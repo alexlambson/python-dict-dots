@@ -8,7 +8,7 @@ README = (HERE / "README.md").read_text()
 setup(
     name="DictDots",
     version="0.2.0",
-    description="DictDots is a tool to access nested dictionaries without long if-else chains.",
+    description="DictDots is a tool to access nested dictionaries using dot-notated keys.",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/alexlambson/python-dict-dots/",
