@@ -5,8 +5,11 @@ The only things on here that work right now are `get s` and `get ns`.
 
 I haven't yet decided if I actually want to support sets due to how
 the indexing works through a hash. It would be cumbersome to try and
-pass a big value into dictdots in the query string. 
+pass a big value into dictdots in the query string.
+
 ## Get
+
+---
 
 Get returns a specific object matching an exact query.
 
@@ -45,6 +48,8 @@ Get returns a specific object matching an exact query.
 
 ## Filter
 
+---
+
 Filter returns a list of objects that matched the query 
 and an empty list if there were no matches.
 
@@ -79,3 +84,28 @@ Supports all `get` query args.
         {"the fall of": "reach"},
     }
     ```
+
+## Exists
+
+---
+
+Uses the same logic as `get`, but returns a boolean instead of the value.
+Checks if the key exists rather than grabbing the value.
+
+Must still return `True` even if the value is falsey. 
+
+e.g. 
+
+```python
+bob = {
+    "sierra_117": False,
+    "sandtrap": "",
+    "endless": None,
+}
+
+assert DictDots.exists(bob, "sierra_117")
+assert DictDots.exists(bob, "sandtrap")
+assert DictDots.exists(bob, "endless")
+```
+
+should all pass.
